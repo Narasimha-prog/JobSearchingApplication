@@ -1,20 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { fromEvent, of } from "rxjs";
-import { debounceTime, map, switchMap, catchError } from "rxjs/operators";
+import { debounceTime, map, switchMap, catchError, take } from "rxjs/operators";
+import { AuthContext } from "./AuthProvider";
 
 // Mock API fetch function
+
+
+
 const fetchResults = (query) => {
-  console.log("Fetching for:", query);
-  
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve([query + " 1", query + " 2", query + " 3"]);
+      if (!query) {
+        reject("Query is empty");
+      } else {
+        resolve([query + " 1", query + " 2", query + " 3"]);
+      }
     }, 500);
   });
 };
 
+
 function App() {
+const{user,setUser }= useContext(AuthContext);
+  const[value, setValue] = useState(0);
+  //create a state to hold search results
   const [results, setResults] = useState([]);
+
 
   useEffect(() => {
     const input = document.getElementById("search");
@@ -24,17 +35,48 @@ function App() {
         map((event) => event.target.value),
         debounceTime(300),
         switchMap((query) =>
-          query ? fetchResults(query).then(res => res) : of([])
+          query ? fetchResults(query): of([])
         ),
         catchError((err) => {
           console.error(err);
           return of([]);
-        })
+        }),
+          take(1) 
       )
       .subscribe((res) => setResults(res));
 
+
     return () => subscription.unsubscribe();
   }, []);
+
+
+  console.log("Start");
+
+// Microtask (Promise)
+Promise.resolve().then(() => {
+  console.log("Microtask: Promise.then()1");
+  setTimeout(() => {
+  console.log("Macrotask in MicroTask: setTimeout()");
+}, 0);
+ console.log("Microtask: Promise.then()2");
+});
+
+// Macrotask (setTimeout)
+setTimeout(() => {
+  console.log("Macrotask: setTimeout()");
+}, 0);
+
+// Another Promise (manual creation)
+// eslint-disable-next-line no-unused-vars
+const p = new Promise((resolve) => {
+  console.log("Promise executor runs immediately (sync)");
+  resolve("Done");
+}
+).then(msg => {
+  console.log("Microtask: Promise.then() from new Promise →", msg);
+});
+
+console.log("End");
 
   return (
     <div style={{ padding: "2rem" }}>
@@ -45,6 +87,11 @@ function App() {
           <li key={i}>{r}</li>
         ))}
       </ul>
+  
+      <h2 >From state{value}  
+      <button onClick={() => setValue(value + 1)}>Increment</button>
+         <button onClick={() => setUser(value + 1)}>Increment</button>
+        {user} </h2>
     </div>
   );
 }
