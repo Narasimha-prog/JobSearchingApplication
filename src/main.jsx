@@ -8,11 +8,11 @@ import { BrowserRouter, Routes } from 'react-router-dom'
 
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
+  <HashRouter>
     
       <Provider store={store}>
         <App />
   
       </Provider>
-  </BrowserRouter>
+  </HashRouter>
 )
