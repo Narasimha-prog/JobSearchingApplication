@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 import { Home } from "./pages/Home";
+import Callback from "./oauth/Callback";
 
 const App = () => {
 
@@ -9,7 +10,8 @@ const App = () => {
   return (
 
     <Routes> 
-    <Route path="/" element={<Home />} />
+      <Route path="/callback" element={<Callback />} />
+       <Route path="/" element={<Home />} />
     </Routes>
   );
 };
