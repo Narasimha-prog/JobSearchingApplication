@@ -3,6 +3,7 @@ import JobCard from "../components/JobCart";
 import { fetchJobs } from "../services/JobServices";
 import { useState } from "react";
 import { userManager } from "../oauth/OauthClient";
+import Footer from "../components/Footer";
 
 export function Home() {
 
@@ -27,6 +28,7 @@ export function Home() {
             {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
             ))}
+            <Footer />
         </div>
     );
 }
